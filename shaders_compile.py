@@ -55,7 +55,7 @@ if len(sys.argv) > 1:
         elif parse_mode == 3:
             out_dir = e
             parse_mode = 0
-            
+
 for e in commands:
     if e.mode == 1:
         compile_dir(e.name)

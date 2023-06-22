@@ -37,6 +37,14 @@ operators = [
 ]
 def has_operator(e : str) -> bool:
     return e in operators
+
+def space_cut(s : str) -> str or None:
+    for i in range(len(s)):
+        e = s[i]
+        if e != ' ':
+            return s[i:len(s)]
+
+    return None
 def tokens(content : str) -> list[str]:
     line = 1
     pos = 0
@@ -57,7 +65,8 @@ def tokens(content : str) -> list[str]:
         elif e == ' ':
             if prev != i:
                 word = content[prev:i]
-                if ' ' not in word:
+                word = space_cut(word)
+                if not(word is None):
                     result.append(token(word, line, pos))
                 prev = i + 1
         elif e == '\n':
@@ -73,7 +82,7 @@ def tokens(content : str) -> list[str]:
 
     return result
 def fmt_quat(a : str, prev : str):
-    return has_operator(a) or prev == '.' or prev == '(' or prev == '$' or prev == '/'
+    return has_operator(a) or prev == '.' or prev == '(' or prev == '$' or prev == '/' or prev == '#'
 def compile_from_tokens(tokens : list[token]) -> str:
     result1 = ''
     prev_line = 1
@@ -115,6 +124,9 @@ def format_shader(path : str) -> list[str]:
     file = open(path)
 
     ts = tokens(file.read())
+
+    # for e in ts:
+    #     print(e.word + ' ')
 
     v_ts = []
     f_ts = []
@@ -281,7 +293,8 @@ class shader_compiler:
             program = self.program_handle.run(
                 [
                     '-f', files[i], '-o', out,
-                    '--type', types[i], '---varyingdef', files[2]
+                    '-i', './shaders/include', '-p', '130',
+                    '--type', types[i], '---varyingdef', files[2],
                 ]
             )
 
